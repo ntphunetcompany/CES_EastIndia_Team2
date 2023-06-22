@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RoutePlanning.Application.Locations.Commands.CreateTwoWayConnection;
-using RoutePlanning.Application.Locations.Queries.SelectableLocationList;
 using RoutePlanning.Client.Web.Authorization;
 using RoutePlanning.Domain.Locations;
+using RoutePlanning.Domain.Locations.Services;
 
 namespace RoutePlanning.Client.Web.Api;
 
@@ -38,36 +38,43 @@ public sealed class RoutesController : ControllerBase
 [Authorize(nameof(TokenRequirement))]
 public sealed class SearchController : ControllerBase
 {
-    //private readonly IMediator _mediator;
+    private readonly IShortestDistanceService _shortestDistanceService;
 
-    //public SearchController(IMediator mediator)
-    //{
-    //    _mediator = mediator;
-    //}
+    public SearchController(IShortestDistanceService shortestDistanceService)
+    {
+        _shortestDistanceService = shortestDistanceService;
+    }
 
     [HttpGet("routes")]
     //public Task<SearchResultDto> Search(SearchRequestDto)
     public SearchResultDto Search(SearchRequestDto searchRequestDto)
     {
-        var locEntId1 = new Location.EntityId();
-        var locEntId2 = new Location.EntityId();
+        var shortestPath = _shortestDistanceService.GetShortestPath(searchRequestDto.Origin, searchRequestDto.Destination);
+        var time = shortestPath.Sum(c => c.Distance);
+        var isWinter = DateChecker.IsWinter(searchRequestDto.DateOrigin);
+        var pricePerSegment = isWinter ? 8 : 5;
+        var basePrice = time * pricePerSegment; // incorrect
+        var price = basePrice
+            * (searchRequestDto.IsAWeapon? 1.2 : 1)
+            * (searchRequestDto.IsALiveAnimal ? 1.25 : 1)
+            * (searchRequestDto.IsAWeapon ? 1.1 : 1);
 
         return new SearchResultDto(
-            1,
+            time,
             searchRequestDto.Origin,
             searchRequestDto.Destination,
-            new DateOnly(),
-            0,
-            new List<SelectableLocation>() { new SelectableLocation(locEntId1, "TestName0"), new SelectableLocation(locEntId2, "TestName1") }
-            );
+            searchRequestDto.DateOrigin.AddDays(time),
+            basePrice,
+            shortestPath
+        );
     }
 }
 
 // TODO: Should be moved
 public class SearchRequestDto
 {
-    public SelectableLocation Origin { get; set; }
-    public SelectableLocation Destination { get; set; }
+    public Location Origin { get; set; }
+    public Location Destination { get; set; }
     public DateOnly DateOrigin { get; set; }
     public float Weight { get; set; }
     public float Height { get; set; }
@@ -80,8 +87,8 @@ public class SearchRequestDto
     public bool IsRecorded { get; set; }
 
     public SearchRequestDto(
-        SelectableLocation origin,
-        SelectableLocation destination,
+        Location origin,
+        Location destination,
         DateOnly dateOrigin,
         float weight,
         float height,
@@ -111,19 +118,19 @@ public class SearchRequestDto
 public class SearchResultDto
 {
     public int NumberOfDays { get; set; }
-    public SelectableLocation Origin { get; set; }
-    public SelectableLocation Destination { get; set; }
+    public Location Origin { get; set; }
+    public Location Destination { get; set; }
     public DateOnly DateDestination { get; set; }
     public decimal Price { get; set; }
-    public List<SelectableLocation> Waypoints { get; set; }
+    public IEnumerable<Connection> Waypoints { get; set; }
 
     public SearchResultDto(
         int numberOfDays,
-        SelectableLocation origin,
-        SelectableLocation destination,
+        Location origin,
+        Location destination,
         DateOnly dateDestination,
         decimal price,
-        List<SelectableLocation> waypoints)
+        IEnumerable<Connection> waypoints)
     {
         NumberOfDays = numberOfDays;
         Origin = origin;
@@ -131,5 +138,15 @@ public class SearchResultDto
         DateDestination = dateDestination;
         Price = price;
         Waypoints = waypoints;
+    }
+}
+
+public static class DateChecker
+{
+    public static bool IsWinter(DateOnly date)
+    {
+        var month = date.Month;
+
+        return month >= 11 || month <= 4;
     }
 }

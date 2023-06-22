@@ -11,6 +11,13 @@ public sealed class ShortestDistanceService : IShortestDistanceService
         _locations = locations;
     }
 
+    public IEnumerable<Connection> GetShortestPath(Location source, Location target)
+    {
+        var locations = _locations.Include(l => l.Connections).ThenInclude(c => c.Destination);
+
+        return CalculateShortestPath(locations, source, target);
+    }
+
     public int CalculateShortestDistance(Location source, Location target)
     {
         var locations = _locations.Include(l => l.Connections).ThenInclude(c => c.Destination);
