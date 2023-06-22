@@ -19,7 +19,7 @@ public sealed class Location : AggregateRoot<Location>
 
     public Connection AddConnection(Location destination, int distance)
     {
-        Connection connection = new(this, destination, distance);
+        Connection connection = new(this, destination, distance, distance);
 
         _connections.Add(connection);
 

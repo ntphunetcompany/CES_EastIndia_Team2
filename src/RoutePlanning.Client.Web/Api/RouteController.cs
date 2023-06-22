@@ -39,10 +39,12 @@ public sealed class RoutesController : ControllerBase
 public sealed class SearchController : ControllerBase
 {
     private readonly IShortestDistanceService _shortestDistanceService;
+    private readonly ICheapestDistanceService _cheapestDistanceService;
 
-    public SearchController(IShortestDistanceService shortestDistanceService)
+    public SearchController(IShortestDistanceService shortestDistanceService, ICheapestDistanceService cheapestDistanceService)
     {
         _shortestDistanceService = shortestDistanceService;
+        _cheapestDistanceService = cheapestDistanceService;
     }
 
     [HttpGet("routes")]
@@ -50,24 +52,12 @@ public sealed class SearchController : ControllerBase
     public SearchResultDto Search(SearchRequestDto searchRequestDto)
     {
         var shortestPath = _shortestDistanceService.GetShortestPath(searchRequestDto.Origin, searchRequestDto.Destination);
-        var time = shortestPath.Sum(c => c.Distance);
-        var isWinter = DateChecker.IsWinter(searchRequestDto.DateOrigin);
-        var pricePerSegment = isWinter ? 8 : 5;
-        var basePrice = time * pricePerSegment; // incorrect
-        var price = basePrice
-            * (searchRequestDto.IsAWeapon? 1.2 : 1)
-            * (searchRequestDto.IsALiveAnimal ? 1.25 : 1)
-            * (searchRequestDto.IsAWeapon ? 1.1 : 1);
-        var recommendedRoute = new SearchResult(
-            time,
-            searchRequestDto.Origin,
-            searchRequestDto.Destination,
-            searchRequestDto.DateOrigin.AddDays(time),
-            basePrice,
-            shortestPath
-        );
+        var fastestRoute = SearchResult.GetSearchResult(shortestPath, searchRequestDto);
 
-        return new SearchResultDto(recommendedRoute, null, null);
+        var cheapestPath = _cheapestDistanceService.GetCheapestPath(searchRequestDto.Origin, searchRequestDto.Destination);
+        var cheapestRoute = SearchResult.GetSearchResult(cheapestPath, searchRequestDto);
+
+        return new SearchResultDto(null, cheapestRoute, fastestRoute);
     }
 }
 
@@ -139,7 +129,7 @@ public class SearchResult
     public Location Destination { get; set; }
     public DateOnly DateDestination { get; set; }
     public decimal Price { get; set; }
-    public IEnumerable<Connection> Waypoints { get; set; }
+    public IEnumerable<Connection>? Waypoints { get; set; }
 
     public SearchResult(
         int numberOfDays,
@@ -147,7 +137,7 @@ public class SearchResult
         Location destination,
         DateOnly dateDestination,
         decimal price,
-        IEnumerable<Connection> waypoints)
+        IEnumerable<Connection>? waypoints)
     {
         NumberOfDays = numberOfDays;
         Origin = origin;
@@ -155,6 +145,26 @@ public class SearchResult
         DateDestination = dateDestination;
         Price = price;
         Waypoints = waypoints;
+    }
+
+    public static SearchResult GetSearchResult(IEnumerable<Connection>? shortestPath, SearchRequestDto searchRequestDto)
+    {
+        var time = shortestPath?.Sum(c => c.Distance);
+        var basePrice = shortestPath?.Sum(c => c.Price);
+        var isWinter = DateChecker.IsWinter(searchRequestDto.DateOrigin);
+        var price = basePrice
+            * (isWinter ? 8m : 5m)
+            * (searchRequestDto.IsAWeapon ? 1.2m : 1m)
+            * (searchRequestDto.IsALiveAnimal ? 1.25m : 1m)
+            * (searchRequestDto.IsAWeapon ? 1.1m : 1m);
+        return new SearchResult(
+            time ?? 0,
+            searchRequestDto.Origin,
+            searchRequestDto.Destination,
+            searchRequestDto.DateOrigin.AddDays(time ?? 0),
+            price ?? 0,
+            shortestPath
+        );
     }
 }
 
