@@ -17,5 +17,3 @@ The accelerator contains:
    - Note that if you select "Remember my password", it will be saved in *Windows Credential Manager*.
 3. Start the `RoutePlanning.Client.Web` project. (**F5** is the default shortcut)
 4. Once you have the solution running it will show further information to get you started. Good luck :)
-
-testing a first commit
