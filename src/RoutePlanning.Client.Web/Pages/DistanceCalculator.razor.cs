@@ -19,6 +19,8 @@ public sealed partial class DistanceCalculator
     private int? DisplayDistance { get; set; }
 
     private string? Username { get; set; }
+    
+    private BookingRequest.EntityId? BookRequestId { get; set; }
 
     private IReadOnlyList<BookingRequest> BookingRequest { get; set; } = null!;
 
@@ -59,8 +61,9 @@ public sealed partial class DistanceCalculator
                     SelectedDestination.Name,
                     DisplayDistance.Value, 100);
 
-                await Mediator.Send(bookingRequest, CancellationToken.None);
-                
+                BookRequestId = await Mediator.Send(bookingRequest, CancellationToken.None);
+                await LogToConsole(BookRequestId.ToString());
+
 
             }
 

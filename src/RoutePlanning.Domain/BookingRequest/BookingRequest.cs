@@ -33,7 +33,7 @@ public sealed class BookingRequest : AggregateRoot<BookingRequest>
 
     public string DestinationLocationName { get; set; }
 
-    public Distance? Distance { get; set; }
+    public int? Distance { get; set; }
     
     public int Price { get; set; }
 

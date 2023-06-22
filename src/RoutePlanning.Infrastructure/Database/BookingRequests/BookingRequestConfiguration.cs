@@ -27,7 +27,6 @@ public sealed class BookingRequestConfiguration : IEntityTypeConfiguration<Booki
         builder.Property(br => br.Price)
             .IsRequired();
         
-        builder.OwnsOne(x => x.Distance);
     }
 }
 

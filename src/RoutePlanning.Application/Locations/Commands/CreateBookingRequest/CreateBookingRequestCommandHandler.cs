@@ -6,7 +6,7 @@ using RoutePlanning.Domain.BookingRequest;
 namespace RoutePlanning.Application.Locations.Commands.CreateBookingRequest;
 
 
-public sealed class CreateBookingRequestCommandHandler : ICommandHandler<CreateBookingRequestCommand>
+public sealed class CreateBookingRequestCommandHandler : ICommandHandler<CreateBookingRequestCommand, BookingRequest.EntityId>
 {
     private readonly IRepository<BookingRequest> _bookingRequest;
 
@@ -15,7 +15,7 @@ public sealed class CreateBookingRequestCommandHandler : ICommandHandler<CreateB
         _bookingRequest = bookingRequest;
     }
 
-    public async Task Handle(CreateBookingRequestCommand command, CancellationToken cancellationToken)
+    public async Task<BookingRequest.EntityId> Handle(CreateBookingRequestCommand command, CancellationToken cancellationToken)
     {
         var bookingRequest = new BookingRequest(
             command.Username,
@@ -24,7 +24,7 @@ public sealed class CreateBookingRequestCommandHandler : ICommandHandler<CreateB
             command.Distance,
             command.Price
         );
-
         await _bookingRequest.Add(bookingRequest, cancellationToken);
+        return bookingRequest.Id;
     }
 }

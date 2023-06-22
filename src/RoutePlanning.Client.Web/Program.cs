@@ -6,6 +6,7 @@ using Netcompany.Net.UnitOfWork;
 using Netcompany.Net.Validation;
 using RoutePlanning.Application;
 using RoutePlanning.Application.Locations.Commands.CreateBookingRequest;
+using RoutePlanning.Domain.BookingRequest;
 using RoutePlanning.Infrastructure;
 
 namespace RoutePlanning.Client.Web;
@@ -31,8 +32,8 @@ public sealed class Program
 
         builder.Host.ConfigureLoggingDefaults();
 
-        builder.Services.AddScoped<ICommandHandler<CreateBookingRequestCommand>, CreateBookingRequestCommandHandler>();
-        
+        builder.Services.AddScoped<ICommandHandler<CreateBookingRequestCommand, BookingRequest.EntityId>, CreateBookingRequestCommandHandler>();
+
 
         var app = builder.Build();
 

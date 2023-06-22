@@ -4,22 +4,57 @@
 
 <PageTitle>Distance Calculator</PageTitle>
 
-<h1>Distance Calculator</h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8">
+            <h1 class="my-4 text-center">Distance Calculator</h1>
 
-<LocationSelector Label="Source" Locations="@Locations" @bind-Selected="SelectedSource"></LocationSelector>
-<LocationSelector Label="Destination" Locations="@Locations" @bind-Selected="SelectedDestination"></LocationSelector>
+            <div class="mb-3">
+                <LocationSelector Label="Source" Locations="@Locations" @bind-Selected="SelectedSource"></LocationSelector>
+            </div>
+            <div class="mb-3">
+                <LocationSelector Label="Destination" Locations="@Locations" @bind-Selected="SelectedDestination"></LocationSelector>
+            </div>
 
-<button class="btn btn-primary mb-5" @onclick="CalculateDistance">Calculate</button>
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary mb-5" @onclick="CalculateDistance">Calculate</button>
+            </div>
 
-<br />
+          @if (DisplayDistance is not null)
+          {
+              <div class="alert alert-primary text-center">
+                  <span class="badge bg-success position-absolute start-0 translate-middle-y px-2 py-1">
+                      Recommended by System
+                  </span>
+                  <span>@DisplaySource</span>
+                  <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+                  <span>@DisplayDistance km</span>
+                  <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+                  <span>@DisplayDestination</span>
+              </div>
+              <div class="alert alert-primary text-center mt-3">
+                  <span class="badge bg-info position-absolute start-0 translate-middle-y px-2 py-1">
+                      Cheapest
+                  </span>
+                  <span>@DisplaySource</span>
+                  <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+                  <span>@DisplayDistance km</span>
+                  <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+                  <span>@DisplayDestination</span>
+              </div>
+              <div class="alert alert-primary text-center mt-3">
+                  <span class="badge bg-warning position-absolute start-0 translate-middle-y px-2 py-1">
+                      Fastest
+                  </span>
+                  <span>@DisplaySource</span>
+                  <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+                  <span>@DisplayDistance km</span>
+                  <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+                  <span>@DisplayDestination</span>
+              </div>
+          }
 
-@if (DisplayDistance is not null)
-{
-    <span class="alert alert-primary">
-        <span>@DisplaySource</span>
-        <span class="oi oi-arrow-right mr-1" aria-hidden="true"></span>
-        <span>@DisplayDistance km</span>
-        <span class="oi oi-arrow-right" aria-hidden="true"></span>
-        <span>@DisplayDestination</span>
-    </span>
-}
+
+        </div>
+    </div>
+</div>
