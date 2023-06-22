@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using RoutePlanning.Application.Locations.Commands.CreateTwoWayConnection;
 using RoutePlanning.Application.Locations.Queries.SelectableLocationList;
 using RoutePlanning.Client.Web.Authorization;
+using RoutePlanning.Domain.Locations;
 
 namespace RoutePlanning.Client.Web.Api;
 
@@ -46,15 +47,18 @@ public sealed class SearchController : ControllerBase
 
     [HttpGet("routes")]
     //public Task<SearchResultDto> Search(SearchRequestDto)
-    public SearchResultDto Search(SearchRequestDto)
+    public SearchResultDto Search(SearchRequestDto searchRequestDto)
     {
+        var locEntId1 = new Location.EntityId();
+        var locEntId2 = new Location.EntityId();
+
         return new SearchResultDto(
             1,
-            new SelectableLocation(0, "TestName0"),
-            new SelectableLocation(1, "TestName1"),
+            searchRequestDto.Origin,
+            searchRequestDto.Destination,
             new DateOnly(),
             0,
-            new List<SelectableLocation>() { new SelectableLocation(0, "TestName0"), new SelectableLocation(1, "TestName1") }
+            new List<SelectableLocation>() { new SelectableLocation(locEntId1, "TestName0"), new SelectableLocation(locEntId2, "TestName1") }
             );
     }
 }
