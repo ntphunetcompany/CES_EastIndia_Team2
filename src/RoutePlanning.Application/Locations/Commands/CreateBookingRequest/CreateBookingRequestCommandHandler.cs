@@ -22,7 +22,12 @@ public sealed class CreateBookingRequestCommandHandler : ICommandHandler<CreateB
             command.SourceLocationName,
             command.DestinationLocationName,
             command.Distance,
-            command.Price
+            command.Price,
+            command.Length,
+            command.Width,
+            command.Height,
+            command.Weight,
+            command.DateTime
         );
         await _bookingRequest.Add(bookingRequest, cancellationToken);
         return bookingRequest.Id;

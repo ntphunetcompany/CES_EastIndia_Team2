@@ -1,32 +1,36 @@
 ﻿@page "/"
 
-<PageTitle>RoutePlanner</PageTitle>
+<PageTitle>East India Team 2</PageTitle>
 
-<h1>RoutePlanner</h1>
+<div class="login-container">
+    <div class="brand-logo">
+        <img src="images/EIC_LOGO.webp" alt="Brand Logo">
+    </div>
+    <h1>Welcome to East India Application from Team 2</h1>
 
-<p>
-    This application is an <i>Accelerator</i> to get you started on a route-planning application.
-    <br />
-    It also serves as an entry point to get introduced to the <a target="_blank" href="https://source.netcompany.com/tfs/Foundations/DOTNET">Netcompany Foundation</a>.
-</p>
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <img src="images/main_background.png" class="img-fluid" alt="Background Image">
+        </div>
+        <div class="col-md-6">
+            <h4>Getting started</h4>
+            <ol>
+                <li>Try the <a href="distancecalculator">Booking Request</a> and the authentication mentioned below!</li>
+                <li>Browse the code to figure out the details and make your own changes.</li>
+            </ol>
 
-<h4>Getting started</h4>
-<ol>
-    <li>Try the <a href="distancecalculator">Distance Calculator</a> and the authentication mentioned below!</li>
-    <li>Read the <a href="documentation">technical documentation</a> to get an overview of the technical architecture in this accelerator.</li>
-    <li>Browse the code to figure out the details and make your own changes.</li>
-</ol>
+            <h5>Authentication</h5>
+            <p>You can try the login in the top right corner with the following credentials:</p>
+            <ul>
+                <li>Username: phunguyen</li>
+                <li>Password: phu123!</li>
+            </ul>
+            <AuthorizeView>
+                <span class="alert alert-success"><span class="oi oi-lock-locked" aria-hidden="true"></span> This content requires authentication. You are logged in as @context.User.Identity?.Name</span>
+            </AuthorizeView>
+        </div>
+    </div>
+</div>
 
-<p>Good luck :)</p>
 
 
-<h5>Authentication</h5>
-<p>You can try the login in the top right corner with the following credentials:</p>
-<ul class="mb-4">
-    <li>Username: alice</li>
-    <li>Password: alice123!</li>
-</ul>
-
-<AuthorizeView>
-    <span class="alert alert-success"><span class="oi oi-lock-locked" aria-hidden="true"></span> This content requires authentication. You are logged in as @context.User.Identity?.Name</span>
-</AuthorizeView>

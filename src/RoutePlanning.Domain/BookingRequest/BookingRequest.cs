@@ -17,13 +17,18 @@ public sealed class BookingRequest : AggregateRoot<BookingRequest>
     }
     
     public BookingRequest(string username, string sourceLocation,
-        string destinationLocation, int distance, int price)
+        string destinationLocation, int distance, double price, double? length, double? width, double? height, double? weight, DateTime dateTime)
     {
         Username = username;
         SourceLocationName = sourceLocation;
         DestinationLocationName = destinationLocation;
         Distance = distance;
         Price = price;
+        Length = length;
+        Width = width;
+        Height = height;
+        Weight = weight;
+        DateTime = dateTime;
     }
 
 
@@ -35,7 +40,15 @@ public sealed class BookingRequest : AggregateRoot<BookingRequest>
 
     public int? Distance { get; set; }
     
-    public int Price { get; set; }
+    public double Price { get; set; }
+    
+    public double? Length { get; set; }
+    public double? Width { get; set; }
+    public double? Height { get; set; }
+    public double? Weight { get; set; }
+    public DateTime DateTime { get; set; }
+
+
 
     public BookingRequestStatus BookingStatus { get; set; } = BookingRequestStatus.Pending;
     

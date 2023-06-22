@@ -3,7 +3,7 @@ using Netcompany.Net.Cqs.Queries;
 using RoutePlanning.Domain.Locations;
 using RoutePlanning.Domain.Locations.Services;
 
-namespace RoutePlanning.Application.Locations.Queries.Distance;
+namespace RoutePlanning.Application.Locations.Commands.Distance;
 
 public sealed class DistanceQueryhandler : IQueryHandler<DistanceQuery, int>
 {

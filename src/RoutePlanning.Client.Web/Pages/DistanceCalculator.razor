@@ -2,12 +2,54 @@
 @using RoutePlanning.Application.Locations.Queries.SelectableLocationList
 @inject IJSRuntime JsRuntime
 
-<PageTitle>Distance Calculator</PageTitle>
+<PageTitle>Booking Request</PageTitle>
 
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-12 col-md-8">
-            <h1 class="my-4 text-center">Distance Calculator</h1>
+            <h1 class="my-4 text-center">Booking Request</h1>
+
+           <div class="mb-3">
+               <label for="shippingDate" class="form-label">Shipping Date:</label>
+               <input type="date" id="shippingDate" class="form-control" @bind="ShippingDate" @bind:format="yyyy-MM-dd" />
+           </div>
+            
+           <div class="mb-3">
+               <label for="length" class="form-label">Length (cm):</label>
+               <input type="number" id="length" class="form-control" @bind="PackageLength" min="0"/>
+               @if (PackageLength == null)
+               {
+                   <div class="text-danger">Length is required</div>
+               }
+           </div>
+           
+           <div class="mb-3">
+               <label for="width" class="form-label">Width (cm):</label>
+               <input type="number" id="width" class="form-control" @bind="PackageWidth" min="0"/>
+               @if (PackageWidth == null)
+               {
+                   <div class="text-danger">Width is required</div>
+               }
+           </div>
+           
+           <div class="mb-3">
+               <label for="height" class="form-label">Height (cm):</label>
+               <input type="number" id="height" class="form-control" @bind="PackageHeight" min="0"/>
+               @if (PackageHeight == null)
+               {
+                   <div class="text-danger">Height is required</div>
+               }
+           </div>
+           
+           <div class="mb-3">
+               <label for="weight" class="form-label">Weight (kg):</label>
+               <input type="number" id="weight" class="form-control" @bind="PackageWeight" min="0"/>
+               @if (PackageWeight == null)
+               {
+                   <div class="text-danger">Weight is required</div>
+               }
+           </div>
+
 
             <div class="mb-3">
                 <LocationSelector Label="Source" Locations="@Locations" @bind-Selected="SelectedSource"></LocationSelector>
@@ -51,6 +93,10 @@
                   <span>@DisplayDistance km</span>
                   <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
                   <span>@DisplayDestination</span>
+              </div>
+              
+              <div class="d-grid gap-2">
+                  <button class="btn btn-primary mb-5" @onclick="OnBookingRequest">Booking</button>
               </div>
           }
 

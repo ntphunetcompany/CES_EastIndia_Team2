@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using RoutePlanning.Application.Locations.Commands.CreateBookingRequest;
-using RoutePlanning.Application.Locations.Queries.Distance;
+using RoutePlanning.Application.Locations.Commands.Distance;
 using RoutePlanning.Application.Locations.Queries.GetBookingRequest;
 using RoutePlanning.Application.Locations.Queries.SelectableLocationList;
 using RoutePlanning.Domain.BookingRequest;
@@ -23,6 +23,12 @@ public sealed partial class DistanceCalculator
     private BookingRequest.EntityId? BookRequestId { get; set; }
 
     private IReadOnlyList<BookingRequest> BookingRequest { get; set; } = null!;
+    
+    private DateTime ShippingDate { get; set; }
+    private double? PackageLength { get; set; }
+    private double? PackageWidth { get; set; }
+    private double? PackageHeight { get; set; }
+    private double? PackageWeight { get; set; }
 
     [Inject]
     private IMediator Mediator { get; set; } = default!;
@@ -34,40 +40,42 @@ public sealed partial class DistanceCalculator
     
     protected override async Task OnInitializedAsync()
     {
+        ShippingDate = DateTime.Today;
         Locations = await Mediator.Send(new SelectableLocationListQuery(), CancellationToken.None);
 
         BookingRequest = await Mediator.Send(new GetBookingRequestQuery(), CancellationToken.None);
-        foreach (var bookingRequest in BookingRequest)
-        {
-            await LogToConsole(bookingRequest.Username);
-            await LogToConsole(bookingRequest.DestinationLocationName);
-            await LogToConsole(bookingRequest.Price.ToString());
-        }
-
         Username = await JsRuntime.InvokeAsync<string>("localStorageFunctions.getItem",  "username" );
         await LogToConsole(Username);
     }
 
     private async Task CalculateDistance()
     {
+        if (Username is null)
+        {
+            await JsRuntime.InvokeVoidAsync("showWarningFunctions.displayLoginRequire");
+            return;
+        }
         if (SelectedSource is not null && SelectedDestination is not null)
         {
             DisplaySource = SelectedSource.Name;
             DisplayDestination = SelectedDestination.Name;
             DisplayDistance = await Mediator.Send(new DistanceQuery(SelectedSource.LocationId, SelectedDestination.LocationId), CancellationToken.None);
+        }
+    }
+
+    private async Task OnBookingRequest()
+    {
+        if (SelectedSource is not null && SelectedDestination is not null)
+        {
             if (Username is not null && DisplayDistance.HasValue)
             {
                 var bookingRequest = new CreateBookingRequestCommand(Username, SelectedSource.Name,
                     SelectedDestination.Name,
-                    DisplayDistance.Value, 100);
+                    DisplayDistance.Value, 100, PackageLength, PackageWidth, PackageHeight, PackageWeight, ShippingDate);
 
                 BookRequestId = await Mediator.Send(bookingRequest, CancellationToken.None);
                 await LogToConsole(BookRequestId.ToString());
-
-
             }
-
-           
         }
     }
 }

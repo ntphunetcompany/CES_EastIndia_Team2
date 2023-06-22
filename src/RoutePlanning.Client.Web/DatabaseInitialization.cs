@@ -126,11 +126,11 @@ public static class DatabaseInitialization
 
     private static async Task SeedUsers(RoutePlanningDatabaseContext context)
     {
-        var alice = new User("alice", User.ComputePasswordHash("alice123!"));
-        await context.AddAsync(alice);
+        var phunguyen = new User("phunguyen", User.ComputePasswordHash("phu123!"));
+        await context.AddAsync(phunguyen);
 
-        var bob = new User("bob", User.ComputePasswordHash("!CapableStudentCries25"));
-        await context.AddAsync(bob);
+        var orhan = new User("orhan", User.ComputePasswordHash("orhan123!"));
+        await context.AddAsync(orhan);
     }
 
     private static void CreateTwoWayConnection(Location locationA, Location locationB, int distance, int timeInHours,

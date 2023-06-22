@@ -1,0 +1,60 @@
+@page "/displayallbookings"
+@using RoutePlanning.Domain.BookingRequest
+@using MediatR
+@using RoutePlanning.Application.Locations.Queries.GetBookingRequest
+@inherits OwningComponentBase
+
+@if (BookingRequests == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Username</th>
+            <th>Source</th>
+            <th>Destination</th>
+            <th>Distance</th>
+            <th>Price</th>
+            <th>Length</th>
+            <th>Width</th>
+            <th>Height</th>
+            <th>Weight</th>
+            <th>Date</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var request in BookingRequests)
+        {
+            <tr>
+                <td>@request.Username</td>
+                <td>@request.SourceLocationName</td>
+                <td>@request.DestinationLocationName</td>
+                <td>@request.Distance km</td>
+                <td>@request.Price</td>
+                <td>@request.Length</td>
+                <td>@request.Width</td>
+                <td>@request.Height</td>
+                <td>@request.Weight</td>
+                <td>@request.DateTime</td>
+                <td>@request.BookingStatus</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IReadOnlyList<BookingRequest>? BookingRequests;
+
+    [Inject]
+    private IMediator Mediator { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        BookingRequests = await Mediator.Send(new GetBookingRequestQuery(), CancellationToken.None);
+    }
+}

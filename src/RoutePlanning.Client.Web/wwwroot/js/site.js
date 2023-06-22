@@ -9,3 +9,9 @@ window.localStorageFunctions = {
         localStorage.removeItem(key);
     }
 };
+
+window.showWarningFunctions = {
+    displayLoginRequire: function () {
+        window.alert("Please login!");
+    }
+}
