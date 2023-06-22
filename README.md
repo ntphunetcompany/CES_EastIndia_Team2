@@ -19,3 +19,4 @@ The accelerator contains:
 4. Once you have the solution running it will show further information to get you started. Good luck :)
 
 testing a first commit
+test
