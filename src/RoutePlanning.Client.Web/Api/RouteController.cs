@@ -58,8 +58,7 @@ public sealed class SearchController : ControllerBase
             * (searchRequestDto.IsAWeapon? 1.2 : 1)
             * (searchRequestDto.IsALiveAnimal ? 1.25 : 1)
             * (searchRequestDto.IsAWeapon ? 1.1 : 1);
-
-        return new SearchResultDto(
+        var recommendedRoute = new SearchResult(
             time,
             searchRequestDto.Origin,
             searchRequestDto.Destination,
@@ -67,10 +66,11 @@ public sealed class SearchController : ControllerBase
             basePrice,
             shortestPath
         );
+
+        return new SearchResultDto(recommendedRoute, null, null);
     }
 }
 
-// TODO: Should be moved
 public class SearchRequestDto
 {
     public Location Origin { get; set; }
@@ -117,6 +117,23 @@ public class SearchRequestDto
 
 public class SearchResultDto
 {
+    public SearchResult? RecommendedRoute { get; set; }
+    public SearchResult? CheapestRoute { get; set; }
+    public SearchResult? FastestRoute { get; set; }
+
+    public SearchResultDto(
+        SearchResult? recommendedRoute,
+        SearchResult? cheapestRoute,
+        SearchResult? fastestRoute)
+    {
+        RecommendedRoute = recommendedRoute;
+        CheapestRoute = cheapestRoute;
+        FastestRoute = fastestRoute;
+    }
+}
+
+public class SearchResult
+{
     public int NumberOfDays { get; set; }
     public Location Origin { get; set; }
     public Location Destination { get; set; }
@@ -124,7 +141,7 @@ public class SearchResultDto
     public decimal Price { get; set; }
     public IEnumerable<Connection> Waypoints { get; set; }
 
-    public SearchResultDto(
+    public SearchResult(
         int numberOfDays,
         Location origin,
         Location destination,
