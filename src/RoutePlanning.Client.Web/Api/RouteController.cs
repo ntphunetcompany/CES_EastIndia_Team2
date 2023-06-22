@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RoutePlanning.Application.Locations.Commands.CreateBookingRequest;
 using RoutePlanning.Application.Locations.Commands.CreateTwoWayConnection;
 using RoutePlanning.Client.Web.Authorization;
 

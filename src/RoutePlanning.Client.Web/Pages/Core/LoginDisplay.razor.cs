@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MediatR;
+using Microsoft.JSInterop;
 using RoutePlanning.Application.Users.Queries.AuthenticatedUser;
 using RoutePlanning.Client.Web.Authentication;
 
@@ -26,12 +27,14 @@ public sealed partial class LoginDisplay
 
         if (User is not null)
         {
+            await JsRuntime.InvokeVoidAsync("localStorageFunctions.setItem", "username", User.Username);
             await AuthStateProvider.SetAuthenticationStateAsync(new UserSession(User.Username));
         }
     }
 
     private async Task Logout()
     {
+    await JsRuntime.InvokeVoidAsync("localStorageFunctions.removeItem", "username");
         await AuthStateProvider.ClearAuthenticationStateAsync();
 
         ShowAuthError = false;

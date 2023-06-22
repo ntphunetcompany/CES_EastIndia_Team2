@@ -1,9 +1,11 @@
 ﻿using Netcompany.Net.Cqs;
+using Netcompany.Net.Cqs.Commands;
 using Netcompany.Net.ErrorHandling;
 using Netcompany.Net.Logging.Serilog;
 using Netcompany.Net.UnitOfWork;
 using Netcompany.Net.Validation;
 using RoutePlanning.Application;
+using RoutePlanning.Application.Locations.Commands.CreateBookingRequest;
 using RoutePlanning.Infrastructure;
 
 namespace RoutePlanning.Client.Web;
@@ -28,6 +30,9 @@ public sealed class Program
         builder.Services.AddApiTokenAuthorization(builder.Configuration);
 
         builder.Host.ConfigureLoggingDefaults();
+
+        builder.Services.AddScoped<ICommandHandler<CreateBookingRequestCommand>, CreateBookingRequestCommandHandler>();
+        
 
         var app = builder.Build();
 

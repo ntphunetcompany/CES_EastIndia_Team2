@@ -9,15 +9,15 @@ public sealed class PathTest
     public void ShortestPathTest()
     {
         // Arrange
-        var locationA = new Location("A");
-        var locationB = new Location("B");
-        var locationC = new Location("C");
+        var locationA = new Locations.Location("A");
+        var locationB = new Locations.Location("B");
+        var locationC = new Locations.Location("C");
 
         locationA.AddConnection(locationB, 2);
         locationB.AddConnection(locationC, 3);
         locationA.AddConnection(locationC, 6);
 
-        var locations = new List<Location> { locationA, locationB, locationC };
+        var locations = new List<Locations.Location> { locationA, locationB, locationC };
 
         var shortestDistanceService = new ShortestDistanceService(locations.AsQueryable());
 
