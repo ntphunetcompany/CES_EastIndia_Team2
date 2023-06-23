@@ -25,20 +25,14 @@ public static class DatabaseInitialization
     }
 
     private static async Task SeedLocationsAndRoutes(RoutePlanningDatabaseContext context)
-    {
-        var karstaden = new Location("Karstaden");
-        await context.AddAsync(karstaden);
+    { 
+        var kapstaden = new Location("Kapstaden");
+        await context.AddAsync(kapstaden);
 
 
 
         var hvalbugten = new Location("Hvalbugten");
         await context.AddAsync(hvalbugten);
-
-
-
-        var luanda = new Location("Luanda");
-        await context.AddAsync(luanda);
-
 
 
         var sT_Helena = new Location("ST_Helena");
@@ -87,24 +81,46 @@ public static class DatabaseInitialization
         var suakin = new Location("Suakin");
         await context.AddAsync(suakin);
 
-        var pap_Guardafui = new Location("PapGuardafui");
-        await context.AddAsync(pap_Guardafui);
+
+
+
+        var kap_Guardafui = new Location("Kap_Guardafui");
+        await context.AddAsync(kap_Guardafui);
+
+
 
         var mocambique = new Location("Mocambique");
         await context.AddAsync(mocambique);
+
+
 
         var amatave = new Location("Amatave");
         await context.AddAsync(amatave);
 
 
 
-        var kap_ST_Marie = new Location("Kat_ST_Marie");
-        var locations = new List<Location> { karstaden, hvalbugten, luanda, sT_Helena, slavekysten, guldKysten, sierra_Leone, dakar, dekanariske_Øer, tanger, tunis, cairo, suakin, pap_Guardafui, mocambique, amatave, kap_ST_Marie };
-        SeedAllConnections(locations);
+        var kap_ST_Marie = new Location("Kap_ST_Marie");
         await context.AddAsync(kap_ST_Marie);
-        
+
+        CreateTwoWayConnection(kapstaden, hvalbugten, 3, 5, 1000);
+        CreateTwoWayConnection(kapstaden, sT_Helena, 9, 6, 1300);
+        CreateTwoWayConnection(kapstaden, kap_ST_Marie, 8, 8, 2300);
+        CreateTwoWayConnection(hvalbugten, slavekysten, 9, 3, 3420);
+        CreateTwoWayConnection(hvalbugten, guldKysten, 11, 2, 6230);
+        CreateTwoWayConnection(hvalbugten, sT_Helena, 10, 8, 2310);
+        CreateTwoWayConnection(sT_Helena, sierra_Leone, 11, 9, 2300);
+        CreateTwoWayConnection(sT_Helena, dakar, 10, 10, 6230);
+        CreateTwoWayConnection(sierra_Leone, guldKysten, 4, 5, 2310);
+        CreateTwoWayConnection(dakar, dekanariske_Øer, 5, 2, 4120);
+        CreateTwoWayConnection(dekanariske_Øer, tanger, 3, 7, 2300);
+        CreateTwoWayConnection(tanger, tunis, 3, 3, 1220);
+        CreateTwoWayConnection(tunis, cairo, 5, 1, 3110);
+        CreateTwoWayConnection(cairo, suakin, 4, 6, 4120);
+        CreateTwoWayConnection(kap_Guardafui, amatave, 8, 4, 3320);
+        CreateTwoWayConnection(kap_Guardafui, mocambique, 8, 7, 2300);
+        CreateTwoWayConnection(mocambique, kap_ST_Marie, 3, 8, 3200);
     }
-    
+
     private static void SeedAllConnections(List<Location> locations)
     {
         var random = new Random();

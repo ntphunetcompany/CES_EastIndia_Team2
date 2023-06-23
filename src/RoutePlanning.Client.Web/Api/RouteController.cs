@@ -1,11 +1,14 @@
-﻿using MediatR;
+﻿using System.ComponentModel.DataAnnotations;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using RoutePlanning.Application.Locations.Commands.CreateBookingRequest;
 using RoutePlanning.Application.Locations.Commands.CreateTwoWayConnection;
+using RoutePlanning.Application.Locations.Commands.Distance;
+using RoutePlanning.Application.Locations.Queries.SelectableLocationList;
 using RoutePlanning.Client.Web.Authorization;
-using RoutePlanning.Domain.Locations;
-using RoutePlanning.Domain.Locations.Services;
+
 
 namespace RoutePlanning.Client.Web.Api;
 
@@ -19,6 +22,7 @@ public sealed class RoutesController : ControllerBase
     public RoutesController(IMediator mediator)
     {
         _mediator = mediator;
+        
     }
 
     [HttpGet("[action]")]
@@ -32,8 +36,133 @@ public sealed class RoutesController : ControllerBase
     {
         await _mediator.Send(command);
     }
-}
 
+    [HttpPost("Book")]
+    public async Task<IActionResult> Book([FromBody][Required] ShipmentDetails shipment)
+    {
+        if (shipment == null || !ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        // Check for extra fields
+        if (shipment.ExtraFields != null && shipment.ExtraFields.Any())
+        {
+            return BadRequest("Additional attributes are not allowed.");
+        }
+
+        if (shipment.ShipmentType == "cautious_parcels")
+        {
+            return StatusCode(403);
+        }
+
+        if (shipment.ShipmentType == "live_animals")
+        {
+            return StatusCode(403);
+        }
+
+        IEnumerable<SelectableLocation> locations = await _mediator.Send(new SelectableLocationListQuery(), CancellationToken.None);
+        
+        var origin = locations.Where(x => x.Name.ToLower() == shipment.Origin.ToLower()).FirstOrDefault();
+        if (origin == null)
+        {
+            return BadRequest("Could not find location: " + shipment.Origin);
+        }
+
+        var dest = locations.Where(x => x.Name.ToLower() == shipment.Destination.ToLower()).FirstOrDefault();
+        if (dest == null)
+        {
+            return BadRequest("Could not find location: " + shipment.Destination);
+        }
+
+        var distance = await _mediator.Send(new DistanceQuery(origin.LocationId, dest.LocationId), CancellationToken.None);
+        var duration = distance * 12;
+
+        var cost = IsWinter(shipment.DateOfShipment) ? 8 : 5;
+        cost = getPriceOfProduct(cost, shipment.ShipmentType);
+
+
+        var username = "test";
+        var bookingRequest = new CreateBookingRequestCommand(username, shipment.Origin,
+        shipment.Destination, distance, cost,decimal.ToDouble(shipment.Length), decimal.ToDouble(shipment.Width), decimal.ToDouble(shipment.Height), decimal.ToDouble(shipment.Weight),shipment.DateOfShipment);
+        var id = await _mediator.Send(bookingRequest, CancellationToken.None);
+       
+        return Ok(id);
+    }
+
+    [HttpGet("RequestPrice")]
+    public async Task<IActionResult> RequestPrice([FromBody][Required] ShipmentDetails shipment)
+    {
+        if (shipment == null || !ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        // Check for extra fields
+        if (shipment.ExtraFields != null && shipment.ExtraFields.Any())
+        {
+            return BadRequest("Additional attributes are not allowed.");
+        }
+
+        if (shipment.ShipmentType == "cautious_parcels")
+        {
+            return StatusCode(403);
+        }
+
+        if (shipment.ShipmentType == "live_animals")
+        {
+            return StatusCode(403);
+        }
+
+        IEnumerable<SelectableLocation> locations = await _mediator.Send(new SelectableLocationListQuery(), CancellationToken.None);
+        var origin = locations.Where(x => x.Name.ToLower() == shipment.Origin.ToLower()).FirstOrDefault();
+        if (origin == null)
+        {
+            return BadRequest("Could not find location: " + shipment.Origin);
+        }
+
+        var dest = locations.Where(x => x.Name.ToLower() == shipment.Destination.ToLower()).FirstOrDefault();
+        if (dest == null)
+        {
+            return BadRequest("Could not find location: " + shipment.Destination);
+        }
+
+        var distance = await _mediator.Send(new DistanceQuery(origin.LocationId, dest.LocationId), CancellationToken.None);
+        var duration = distance * 12;
+
+        var cost = IsWinter(shipment.DateOfShipment) ? 8 : 5;
+        cost = getPriceOfProduct(cost, shipment.ShipmentType);
+
+        var output = new RouteDetails();
+        output.Origin = shipment.Origin;
+        output.Destination = shipment.Destination;
+        output.Duration = duration;
+        output.Cost = cost;
+        return Ok(output);
+    }
+
+    public int getPriceOfProduct(int baseCost, string shipmentType)
+    {
+        switch (shipmentType) {
+            case "weapons":
+                return (int)(Math.Round(baseCost * 1.2, MidpointRounding.AwayFromZero));
+            case "refrigerated_goods":
+                return (int)(Math.Round(baseCost * 1.1, MidpointRounding.AwayFromZero));
+            case "live_animals":
+                return (int)(Math.Round(baseCost * 1.25, MidpointRounding.AwayFromZero));
+            default:
+                return baseCost;
+        }
+    }
+
+    public static bool IsWinter(System.DateTime date)
+    {
+        var month = date.Month;
+
+        return month >= 11 || month <= 4;
+    }
+}
+/*
 [Route("api")]
 [ApiController]
 [Authorize(nameof(TokenRequirement))]
@@ -61,7 +190,7 @@ public sealed class SearchController : ControllerBase
         return new SearchResultDto(null, cheapestRoute, fastestRoute);
     }
 }
-
+/*
 public class SearchRequestDto
 {
     public Location Origin { get; set; }
@@ -122,7 +251,7 @@ public class SearchResultDto
         FastestRoute = fastestRoute;
     }
 }
-
+/*
 public class SearchResult
 {
     public int NumberOfDays { get; set; }
@@ -178,3 +307,4 @@ public static class DateChecker
         return month >= 11 || month <= 4;
     }
 }
+*/
