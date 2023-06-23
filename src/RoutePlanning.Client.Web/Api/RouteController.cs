@@ -79,6 +79,7 @@ public sealed class RoutesController : ControllerBase
         var duration = distance.Distance * 12;
 
         var cost = IsWinter(shipment.DateOfShipment) ? 8 : 5;
+        cost *= distance.Distance;
         cost = getPriceOfProduct(cost, shipment.ShipmentType);
 
         DateTime expectedArrival = shipment.DateOfShipment.AddMinutes(60 * duration);
@@ -132,6 +133,7 @@ public sealed class RoutesController : ControllerBase
         var duration = distance.Distance * 12;
 
         var cost = IsWinter(shipment.DateOfShipment) ? 8 : 5;
+        cost *= distance.Distance;
         cost = getPriceOfProduct(cost, shipment.ShipmentType);
 
         var output = new RouteDetails();
