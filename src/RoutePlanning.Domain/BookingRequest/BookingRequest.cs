@@ -32,6 +32,24 @@ public sealed class BookingRequest : AggregateRoot<BookingRequest>
         EstimatedDateTime = estimatedDateTime;
         DateTime = dateTime;
     }
+    
+    public BookingRequest(string username, string sourceLocation,
+        string destinationLocation, int distance, double? price, double? length, double? width, double? height, 
+        double? weight, DateTime? estimatedDateTime, DateTime dateTime, BookingRequestStatus bookingRequestStatus)
+    {
+        Username = username;
+        SourceLocationName = sourceLocation;
+        DestinationLocationName = destinationLocation;
+        Distance = distance;
+        Price = price;
+        Length = length;
+        Width = width;
+        Height = height;
+        Weight = weight;
+        EstimatedDateTime = estimatedDateTime;
+        DateTime = dateTime;
+        BookingStatus = bookingRequestStatus;
+    }
 
 
     
@@ -53,5 +71,10 @@ public sealed class BookingRequest : AggregateRoot<BookingRequest>
     public DateTime? EstimatedDateTime { get; set; }
 
     public BookingRequestStatus BookingStatus { get; set; } = BookingRequestStatus.Pending;
+
+    public void UpdateBookingStatus(BookingRequestStatus bookingRequestStatus)
+    {
+        BookingStatus = bookingRequestStatus;
+    }
     
 }

@@ -21,6 +21,7 @@ public static class DatabaseInitialization
         {
             await SeedUsers(context);
             await SeedLocationsAndRoutes(context);
+            await SeedBookingRequests(context);
 
             unitOfWork.Commit();
         }
@@ -134,33 +135,33 @@ public static class DatabaseInitialization
         var orhan = new User("orhan", User.ComputePasswordHash("orhan123!"));
         await context.AddAsync(orhan);
     }
-    // private static async Task SeedBookingRequests(RoutePlanningDatabaseContext context)
-    // {
-    //         var random = new Random();
-    //         var statuses = Enum.GetValues(typeof(BookingRequestStatus));
-    //
-    //         for (var i = 1; i <= 10; i++)
-    //         {
-    //             var booking = new BookingRequest
-    //             {
-    //                 Username = $"User{i}",
-    //                 SourceLocationName = $"Source{i}",
-    //                 DestinationLocationName = $"Destination{i}",
-    //                 Distance = random.Next(1, 100),
-    //                 Price = random.NextDouble() * 100,
-    //                 Length = random.NextDouble() * 10,
-    //                 Width = random.NextDouble() * 10,
-    //                 Height = random.NextDouble() * 10,
-    //                 Weight = random.NextDouble() * 10,
-    //                 DateTime = DateTime.Now.AddDays(-i),
-    //                 EstimatedDateTime = DateTime.Now.AddDays(-i + 5),
-    //                 BookingStatus = (BookingRequestStatus)statuses.GetValue(random.Next(statuses.Length))
-    //             };
-    //
-    //             modelBuilder.Entity<BookingRequest>().HasData(booking);
-    //         }
-    //     
-    // }
+    public static async Task SeedBookingRequests(RoutePlanningDatabaseContext context)
+    {
+        var random = new Random();
+        var statuses = Enum.GetValues(typeof(BookingRequestStatus));
+
+        for (var i = 1; i <= 10; i++)
+        {
+            var booking = new BookingRequest
+            {
+                Username = $"User{i}",
+                SourceLocationName = $"Source{i}",
+                DestinationLocationName = $"Destination{i}",
+                Distance = random.Next(1, 100),
+                Price = random.NextDouble() * 100,
+                Length = random.NextDouble() * 10,
+                Width = random.NextDouble() * 10,
+                Height = random.NextDouble() * 10,
+                Weight = random.NextDouble() * 10,
+                DateTime = DateTime.Now.AddDays(-i),
+                EstimatedDateTime = DateTime.Now.AddDays(-i + 5),
+                BookingStatus = (BookingRequestStatus)statuses.GetValue(random.Next(statuses.Length))!
+            };
+
+            await context.AddAsync(booking);
+        }
+
+    }
 
 
     private static void CreateTwoWayConnection(Location locationA, Location locationB, int distance, int timeInHours,

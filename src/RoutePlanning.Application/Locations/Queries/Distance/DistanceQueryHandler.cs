@@ -22,7 +22,6 @@ public sealed class DistanceQueryhandler : IQueryHandler<DistanceQuery, BookingS
         var destination = await _locations.FirstAsync(l => l.Id == request.DestinationId, cancellationToken);
 
         var distance = _shortestDistanceService.CalculateShortestDistance(source, destination);
-
         return new BookingSearchDto(distance, distance * 5, distance * 12);
     }
 }

@@ -1,6 +1,7 @@
 @page "/displayallbookings"
 @using RoutePlanning.Domain.BookingRequest
 @using MediatR
+@using RoutePlanning.Application.Locations.Commands.UpdateBookingStatus
 @using RoutePlanning.Application.Locations.Queries.GetBookingRequest
 @inherits OwningComponentBase
 
@@ -42,12 +43,14 @@ else
                 <td>@request.Weight</td>
                 <td>@request.DateTime</td>
                 <td>@request.EstimatedDateTime</td>
-                <td>
-                    <button @onclick="() => UpdateStatus(request)" class="btn btn-primary">
-                        @request.BookingStatus
-                    </button>
-                </td>
-
+               <td>
+                   <select @onchange="(e) => UpdateStatus(request, e)" value="@request.BookingStatus">
+                       @foreach (var status in Enum.GetValues<BookingRequestStatus>())
+                       {
+                           <option value="@status">@status</option>
+                       }
+                   </select>
+               </td>
             </tr>
         }
         </tbody>
@@ -64,9 +67,26 @@ else
     {
         BookingRequests = await Mediator.Send(new GetBookingRequestQuery(), CancellationToken.None);
     }
-    void UpdateStatus(BookingRequest request)
+    void UpdateStatus(BookingRequest request, ChangeEventArgs e)
     {
-    // Here you can handle the status update logic
-    // It can show a modal window or a dropdown to let the user select the new status
+        if (Enum.TryParse<BookingRequestStatus>(e.Value?.ToString(), out var newStatus))
+        {
+            Mediator.Send(new UpdateBookingStatusCommand(new BookingRequest(
+                request.Username,
+                request.SourceLocationName,
+                request.DestinationLocationName,
+                (int)request.Distance!,
+                request.Price,
+                request.Length,
+                request.Width,
+                request.Height,
+                request.Weight,
+                request.EstimatedDateTime,
+                request.DateTime,
+                newStatus
+                )), CancellationToken.None);
+
+        }
     }
+
 }
