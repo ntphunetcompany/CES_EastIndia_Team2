@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using RoutePlanning.Application.Locations.Commands.CreateBookingRequest;
 using RoutePlanning.Application.Locations.Commands.CreateTwoWayConnection;
-using RoutePlanning.Application.Locations.Commands.Distance;
+using RoutePlanning.Application.Locations.Queries.Distance;
 using RoutePlanning.Application.Locations.Queries.SelectableLocationList;
 using RoutePlanning.Client.Web.Authorization;
 
@@ -75,16 +75,17 @@ public sealed class RoutesController : ControllerBase
             return BadRequest("Could not find location: " + shipment.Destination);
         }
 
-        var distance = await _mediator.Send(new DistanceQuery(origin.LocationId, dest.LocationId), CancellationToken.None);
-        var duration = distance * 12;
+        BookingSearchDto distance = await _mediator.Send(new DistanceQuery(origin.LocationId, dest.LocationId), CancellationToken.None);
+        var duration = distance.Distance * 12;
 
         var cost = IsWinter(shipment.DateOfShipment) ? 8 : 5;
         cost = getPriceOfProduct(cost, shipment.ShipmentType);
 
+        DateTime expectedArrival = shipment.DateOfShipment.AddMinutes(60 * duration);
 
         var username = "test";
         var bookingRequest = new CreateBookingRequestCommand(username, shipment.Origin,
-        shipment.Destination, distance, cost,decimal.ToDouble(shipment.Length), decimal.ToDouble(shipment.Width), decimal.ToDouble(shipment.Height), decimal.ToDouble(shipment.Weight),shipment.DateOfShipment);
+        shipment.Destination, distance.Distance, cost,decimal.ToDouble(shipment.Length), decimal.ToDouble(shipment.Width), decimal.ToDouble(shipment.Height), decimal.ToDouble(shipment.Weight), expectedArrival, shipment.DateOfShipment);
         var id = await _mediator.Send(bookingRequest, CancellationToken.None);
        
         return Ok(id);
@@ -128,7 +129,7 @@ public sealed class RoutesController : ControllerBase
         }
 
         var distance = await _mediator.Send(new DistanceQuery(origin.LocationId, dest.LocationId), CancellationToken.None);
-        var duration = distance * 12;
+        var duration = distance.Distance * 12;
 
         var cost = IsWinter(shipment.DateOfShipment) ? 8 : 5;
         cost = getPriceOfProduct(cost, shipment.ShipmentType);
