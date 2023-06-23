@@ -64,36 +64,57 @@
 
           @if (DisplayDistance is not null)
           {
-              <div class="alert alert-primary text-center">
-                  <span class="badge bg-success position-absolute start-0 translate-middle-y px-2 py-1">
-                      Recommended by System
-                  </span>
-                  <span>@DisplaySource</span>
-                  <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
-                  <span>@DisplayDistance km</span>
-                  <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
-                  <span>@DisplayDestination</span>
-              </div>
-              <div class="alert alert-primary text-center mt-3">
-                  <span class="badge bg-info position-absolute start-0 translate-middle-y px-2 py-1">
-                      Cheapest
-                  </span>
-                  <span>@DisplaySource</span>
-                  <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
-                  <span>@DisplayDistance km</span>
-                  <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
-                  <span>@DisplayDestination</span>
-              </div>
-              <div class="alert alert-primary text-center mt-3">
-                  <span class="badge bg-warning position-absolute start-0 translate-middle-y px-2 py-1">
-                      Fastest
-                  </span>
-                  <span>@DisplaySource</span>
-                  <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
-                  <span>@DisplayDistance km</span>
-                  <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
-                  <span>@DisplayDestination</span>
-              </div>
+              <label>
+                  <input type="checkbox" @bind="IsRecommendSelected" />
+                  <div class="alert alert-primary text-center">
+                      <span class="badge bg-success position-absolute start-0 translate-middle-y px-2 py-1">
+                          Recommended by System
+                      </span>
+                      <span>@DisplaySource</span>
+                      <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+                      <span>@DisplayDistance km</span>
+                      <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+                      <span>@DisplayDestination</span>
+                      <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+                      <span>@RecommendPrice$</span>
+                      <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+                      <span>@EstimatedRecommendShippingDate</span>
+                  </div>
+              </label>
+              <label>
+                  <input type="checkbox" @bind="IsCheapestSelected" />
+                  <div class="alert alert-primary text-center mt-3">
+                      <span class="badge bg-info position-absolute start-0 translate-middle-y px-2 py-1">
+                          Cheapest
+                      </span>
+                      <span>@DisplaySource</span>
+                      <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+                      <span>@DisplayDistance km</span>
+                      <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+                      <span>@DisplayDestination</span>
+                      <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+                      <span>@CheapestPrice$</span>
+                      <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+                      <span>@EstimatedCheapestShippingDate</span>
+                  </div>
+              </label>
+              <label>
+          <input type="checkbox" @bind="IsFastestSelected" />
+          <div class="alert alert-primary text-center mt-3">
+              <span class="badge bg-warning position-absolute start-0 translate-middle-y px-2 py-1">
+                  Fastest
+              </span>
+              <span>@DisplaySource</span>
+              <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+              <span>@DisplayDistance km</span>
+              <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+              <span>@DisplayDestination</span>
+              <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+              <span>@FastestPrice$</span>
+              <span class="oi oi-arrow-right mx-2" aria-hidden="true"></span>
+              <span>@EstimatedFastestShippingDate</span>
+          </div>
+          </label>
               
               <div class="d-grid gap-2">
                   <button class="btn btn-primary mb-5" @onclick="OnBookingRequest">Booking</button>

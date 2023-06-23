@@ -1,0 +1,20 @@
+@page "/datainsight"
+@using RoutePlanning.Application.Locations.Queries.GetMonthlyAvenue
+@using MediatR
+
+<div class="revenue-container">
+    <h1 class="revenue-title">Total Revenue This Month</h1>
+    <h2 class="revenue-amount">@TotalRevenue$</h2>
+</div>
+
+@code {
+    [Inject]
+    private IMediator Mediator { get; set; } = default!;
+    private decimal TotalRevenue { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        TotalRevenue = await Mediator.Send(new GetMonthlyRevenueQuery(), CancellationToken.None);
+        
+    }
+}
