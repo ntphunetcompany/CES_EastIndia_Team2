@@ -10,9 +10,4 @@
     <ProjectReference Include="..\RoutePlanning.Domain\RoutePlanning.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Locations\Queries\Distance" />
-    <Folder Include="Locations\Queries\GetBookingRequestById" />
-  </ItemGroup>
-
 </Project>

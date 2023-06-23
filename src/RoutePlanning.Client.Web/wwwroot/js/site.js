@@ -13,5 +13,8 @@ window.localStorageFunctions = {
 window.showWarningFunctions = {
     displayLoginRequire: function () {
         window.alert("Please login!");
+    },
+    displayRegisterSuccess: function () {
+        window.alert("Created a booking successfully!");
     }
 }

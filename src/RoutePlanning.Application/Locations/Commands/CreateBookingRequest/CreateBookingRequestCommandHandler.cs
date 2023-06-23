@@ -27,6 +27,7 @@ public sealed class CreateBookingRequestCommandHandler : ICommandHandler<CreateB
             command.Width,
             command.Height,
             command.Weight,
+            command.EstimatedDateTime,
             command.DateTime
         );
         await _bookingRequest.Add(bookingRequest, cancellationToken);

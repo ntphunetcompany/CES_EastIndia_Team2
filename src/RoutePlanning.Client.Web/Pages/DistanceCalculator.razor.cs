@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using RoutePlanning.Application.Locations.Commands.CreateBookingRequest;
-using RoutePlanning.Application.Locations.Commands.Distance;
+using RoutePlanning.Application.Locations.Queries.Distance;
 using RoutePlanning.Application.Locations.Queries.GetBookingRequest;
 using RoutePlanning.Application.Locations.Queries.SelectableLocationList;
 using RoutePlanning.Domain.BookingRequest;
@@ -29,6 +29,20 @@ public sealed partial class DistanceCalculator
     private double? PackageWidth { get; set; }
     private double? PackageHeight { get; set; }
     private double? PackageWeight { get; set; }
+    
+    private double? RecommendPrice { get; set; }
+    private double? CheapestPrice { get; set; }
+
+    private double? FastestPrice { get; set; }
+
+
+    private DateTime? EstimatedRecommendShippingDate { get; set; }
+    private DateTime? EstimatedCheapestShippingDate { get; set; }
+    private DateTime? EstimatedFastestShippingDate { get; set; }
+    bool IsRecommendSelected = false;
+    bool IsCheapestSelected = false;
+    bool IsFastestSelected = false;
+
 
     [Inject]
     private IMediator Mediator { get; set; } = default!;
@@ -45,7 +59,6 @@ public sealed partial class DistanceCalculator
 
         BookingRequest = await Mediator.Send(new GetBookingRequestQuery(), CancellationToken.None);
         Username = await JsRuntime.InvokeAsync<string>("localStorageFunctions.getItem",  "username" );
-        await LogToConsole(Username);
     }
 
     private async Task CalculateDistance()
@@ -59,7 +72,14 @@ public sealed partial class DistanceCalculator
         {
             DisplaySource = SelectedSource.Name;
             DisplayDestination = SelectedDestination.Name;
-            DisplayDistance = await Mediator.Send(new DistanceQuery(SelectedSource.LocationId, SelectedDestination.LocationId), CancellationToken.None);
+            var bookingSearchDto = await Mediator.Send(new DistanceQuery(SelectedSource.LocationId, SelectedDestination.LocationId), CancellationToken.None);
+            EstimatedRecommendShippingDate = ShippingDate.AddHours(bookingSearchDto.HoursToShip);
+            EstimatedCheapestShippingDate = ShippingDate.AddHours(bookingSearchDto.HoursToShip + bookingSearchDto.HoursToShip*0.3);
+            EstimatedFastestShippingDate = ShippingDate.AddHours(bookingSearchDto.HoursToShip - bookingSearchDto.HoursToShip*0.2);
+            DisplayDistance = bookingSearchDto.Distance;
+            RecommendPrice = bookingSearchDto.Price;
+            CheapestPrice = bookingSearchDto.Price * 0.8;
+            FastestPrice = bookingSearchDto.Price * 1.3;
         }
     }
 
@@ -71,10 +91,18 @@ public sealed partial class DistanceCalculator
             {
                 var bookingRequest = new CreateBookingRequestCommand(Username, SelectedSource.Name,
                     SelectedDestination.Name,
-                    DisplayDistance.Value, 100, PackageLength, PackageWidth, PackageHeight, PackageWeight, ShippingDate);
+                    DisplayDistance.Value, IsRecommendSelected ? RecommendPrice :
+                    IsCheapestSelected ? CheapestPrice :
+                    IsFastestSelected ? FastestPrice :
+                    null, PackageLength, PackageWidth, PackageHeight, PackageWeight, 
+                    IsRecommendSelected ? EstimatedRecommendShippingDate :
+                    IsCheapestSelected ? EstimatedCheapestShippingDate :
+                    IsFastestSelected ? EstimatedFastestShippingDate :
+                    null, ShippingDate);
 
                 BookRequestId = await Mediator.Send(bookingRequest, CancellationToken.None);
-                await LogToConsole(BookRequestId.ToString());
+                await JsRuntime.InvokeVoidAsync("showWarningFunctions.displayRegisterSuccess");
+
             }
         }
     }
